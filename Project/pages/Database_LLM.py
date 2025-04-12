@@ -80,9 +80,14 @@ with st.sidebar:
     st.header("📁 Create Vector Database")
     
 
-    # Define the paths to your CSV files
-    counsel_path = os.path.join("data", "counselchat-data.csv")
-    kaggle_path = os.path.join("data", "train.csv")
+    # Construct the path to the CSV file
+    project_root = os.path.dirname(os.path.abspath(__file__))  # Get the path of the current file
+    data_folder = os.path.join(project_root, '..', 'data')  # Navigate to the 'data' folder
+
+    # CSV file paths
+    counsel_path = os.path.join(data_folder, 'counselchat-data.csv')
+    kaggle_path = os.path.join(data_folder, 'train.csv')
+
     # default_counsel_path = "data/counselchat-data.csv"
     # default_kaggle_path = "data/train.csv"
 
