@@ -6,9 +6,8 @@ import torch
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
-# Force the model to use the CPU (change from cuda if needed)
-device = torch.device("cpu")
-model = model.to(device)
+# Force model to stay on CPU (no need to move it to CUDA)
+model.eval()
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
@@ -42,10 +41,9 @@ with st.container():
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
     
-    # Move input tensor to the correct device (same as model)
-    inputs = {key: value.to(device) for key, value in inputs.items()}
+    # Ensure inputs are on the same device as model (CPU)
+    inputs = {key: value.to("cpu") for key, value in inputs.items()}
     
-    model.eval()
     with torch.no_grad():
         outputs = model(**inputs)
     
