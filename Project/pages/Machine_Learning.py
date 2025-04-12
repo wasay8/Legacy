@@ -78,11 +78,11 @@ def display_quality(prediction):
 
 # Action button
 st.markdown("---")
-st.markdown("### 🔍 Run Classification")
+st.markdown("### Run Classification")
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    classify_button = st.button("🚀 Classify Now", use_container_width=True)
+    classify_button = st.button("Classify Now", use_container_width=True)
 
 if classify_button:
     if prompt and response:
