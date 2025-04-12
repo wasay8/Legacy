@@ -2,16 +2,14 @@ import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-# Streamlit CPU environment — no need for `.to(device)`
-# Just ensure everything runs on CPU explicitly
-
-# Load model and tokenizer from HF (safe for safetensors)
+# Load model and tokenizer
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
-# App UI
+# App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
 
+# App header
 st.markdown(
     """
     <div style="text-align:center; padding: 10px;">
@@ -22,21 +20,23 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Prefilled Input Section
 with st.container():
     st.subheader("📝 Input Fields")
     prompt = st.text_area(
         "🗣️ Prompt",
-        "I would do about anything to lose these 50lbs...",
+        "I would do about anything to lose these 50lbs.  But dieting doesn't work for me. Could you tell me what drugs or even surgery might help?",
+        help="Enter a mental health-related prompt."
     )
     response = st.text_area(
         "💬 Response",
         "You don't know what else to do.",
+        help="Enter the response to the prompt."
     )
 
-# Classification
+# Classification logic
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
-    # No need to move to device in CPU-only environment
     model.eval()
     with torch.no_grad():
         outputs = model(**inputs)
@@ -59,7 +59,7 @@ def display_quality(prediction):
         unsafe_allow_html=True
     )
 
-# Button
+# Action button
 st.markdown("---")
 st.markdown("### 🔍 Run Classification")
 
@@ -71,10 +71,7 @@ if classify_button:
     if prompt and response:
         input_text = f"Prompt: {prompt.strip()}\nResponse: {response.strip()}"
         with st.spinner("Analyzing response quality..."):
-            try:
-                prediction = classify_quality(input_text)
-                display_quality(prediction)
-            except Exception as e:
-                st.error(f"❌ Error during classification: {str(e)}")
+            prediction = classify_quality(input_text)
+            display_quality(prediction)
     else:
-        st.warning("⚠️ Please fill in both the prompt and the response fields.")
+        st.warning("⚠️ Please fill in both the prompt and the response fields before classifying.")
