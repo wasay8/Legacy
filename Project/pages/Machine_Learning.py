@@ -2,13 +2,8 @@ import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-# Define device
-device = torch.device("cpu")
-
 # Load model and tokenizer
-model = BertForSequenceClassification.from_pretrained(
-    'wasay8/bert-mental-health-lq-hq-mq'
-).to(device)
+model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
 # App config
@@ -25,7 +20,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Prefilled Input Section
+# Input Fields
 with st.container():
     st.subheader("📝 Input Fields")
     prompt = st.text_area(
@@ -42,7 +37,6 @@ with st.container():
 # Classification logic
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
-    inputs = {k: v.to(device) for k, v in inputs.items()}  # move tensors to device
 
     with torch.no_grad():
         outputs = model(**inputs)
