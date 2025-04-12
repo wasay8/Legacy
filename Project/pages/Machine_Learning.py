@@ -1,10 +1,21 @@
 import streamlit as st
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
 import torch
 
-# Load model and tokenizer
-model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+# Force model to fully initialize weights
+@st.cache_resource
+def load_model():
+    config = BertConfig.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+    model = BertForSequenceClassification.from_pretrained(
+        'wasay8/bert-mental-health-lq-hq-mq',
+        config=config,
+        ignore_mismatched_sizes=True,   # Avoid shape mismatch crash
+        low_cpu_mem_usage=False         # Avoid lazy init (meta tensors)
+    )
+    tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+    return model, tokenizer
+
+model, tokenizer = load_model()
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
@@ -20,7 +31,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Input Fields
+# Input Section
 with st.container():
     st.subheader("📝 Input Fields")
     prompt = st.text_area(
@@ -42,11 +53,12 @@ def classify_quality(input_text):
         outputs = model(**inputs)
 
     logits = outputs.logits
-    if logits is not None and logits.numel() > 0:
+
+    if logits is not None and logits.numel() > 0 and logits.device.type != "meta":
         prediction = torch.argmax(logits, dim=-1)
         return prediction.item()
     else:
-        st.error("⚠️ Invalid model output. Please check the model or inputs.")
+        st.error("⚠️ Model returned meta tensors. Cannot classify. Please use a compatible model.")
         return None
 
 def display_quality(prediction):
