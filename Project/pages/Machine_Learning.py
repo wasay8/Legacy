@@ -10,9 +10,9 @@ tokenizer = AutoTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 # Ensure model is loaded on CPU (not just moved after load!)
 model = AutoModelForSequenceClassification.from_pretrained(
     'wasay8/bert-mental-health-lq-hq-mq',
-    device_map=None,       # Important for CPU-only
-    low_cpu_mem_usage=False,  # Force full load
-    torch_dtype=torch.float32  # Ensure no half precision
+     use_safetensors=False,  # 👈 Important to avoid meta tensors
+        low_cpu_mem_usage=False,  # 👈 Forces full weight load
+        device_map=None  # Ensure no half precision
 )
 
 model.eval()  # Important!
