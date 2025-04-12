@@ -5,7 +5,6 @@ import torch
 # Load CPU-compatible model and tokenizer from Hugging Face
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-model.to("cpu")  # ensure model is on CPU
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
