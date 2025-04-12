@@ -5,15 +5,17 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 
 # Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-
-# Ensure model is loaded on CPU (not just moved after load!)
+tokenizer = AutoTokenizer.from_pretrained(
+        'wasay8/bert-mental-health-lq-hq-mq',
+        use_fast=True
+    )
 model = AutoModelForSequenceClassification.from_pretrained(
     'wasay8/bert-mental-health-lq-hq-mq',
-     use_safetensors=False,  # 👈 Important to avoid meta tensors
-        low_cpu_mem_usage=False,  # 👈 Forces full weight load
-        device_map=None  # Ensure no half precision
+    use_safetensors=False,        # Disable safetensors
+    low_cpu_mem_usage=False,      # Fully load weights
+    device_map=None               # Prevent meta tensors
 )
+
 
 model.eval()  # Important!
 
