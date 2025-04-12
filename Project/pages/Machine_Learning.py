@@ -2,14 +2,19 @@ import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-# Load the model and tokenizer from Hugging Face (ensure no device-specific movement)
-model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+# Streamlit CPU environment — no need for `.to(device)`
+# Just ensure everything runs on CPU explicitly
+
+# Load model and tokenizer from HF (safe for safetensors)
+model = BertForSequenceClassification.from_pretrained(
+    'wasay8/bert-mental-health-lq-hq-mq',
+    device_map=None  # avoid using accelerate
+)
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
-# App config
+# App UI
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
 
-# App header
 st.markdown(
     """
     <div style="text-align:center; padding: 10px;">
@@ -20,50 +25,26 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Input Section
 with st.container():
     st.subheader("📝 Input Fields")
     prompt = st.text_area(
         "🗣️ Prompt",
-        "I would do about anything to lose these 50lbs. But dieting doesn't work for me. Could you tell me what drugs or even surgery might help?",
-        help="Enter a mental health-related prompt."
+        "I would do about anything to lose these 50lbs...",
     )
     response = st.text_area(
         "💬 Response",
         "You don't know what else to do.",
-        help="Enter the response to the prompt."
     )
 
-# Classification logic
+# Classification
 def classify_quality(input_text):
-    # Tokenize the input text
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
-
-    # Check if inputs are on the CPU
-    if any(input_tensor.device != torch.device('cpu') for input_tensor in inputs.values()):
-        inputs = {k: v.to('cpu') for k, v in inputs.items()}
-
-    # Run model inference
+    # No need to move to device in CPU-only environment
+    model.eval()
     with torch.no_grad():
         outputs = model(**inputs)
-
-    # Ensure that logits are valid tensors
-    logits = outputs.logits
-    if logits is None:
-        raise ValueError("Model did not return valid logits.")
-    
-    # Check if logits are in an expected state before getting prediction
-    if logits.is_meta:
-        raise RuntimeError("Model output contains meta tensors, which are not valid for predictions.")
-
-    # Get the prediction from the logits
-    prediction = torch.argmax(logits, dim=-1)
-    
-    # Ensure it's a valid tensor and then get the value
-    if prediction.numel() > 0:
-        return prediction.item()
-    else:
-        raise ValueError("Prediction tensor is empty.")
+    prediction = torch.argmax(outputs.logits, dim=-1)
+    return prediction.item()
 
 def display_quality(prediction):
     label_map = {
@@ -71,18 +52,17 @@ def display_quality(prediction):
         1: ("High Quality", "#2ECC71", "✅"),
         2: ("Mid Quality", "#F1C40F", "🟡"),
     }
-    if prediction is not None:
-        label, color, icon = label_map[prediction]
-        st.markdown(
-            f"""
-            <div style="background-color:{color}; padding: 15px; border-radius: 10px; text-align: center;">
-                <h2 style="color:white;">{icon} Predicted Response Quality: {label}</h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    label, color, icon = label_map[prediction]
+    st.markdown(
+        f"""
+        <div style="background-color:{color}; padding: 15px; border-radius: 10px; text-align: center;">
+            <h2 style="color:white;">{icon} Predicted Response Quality: {label}</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Action button
+# Button
 st.markdown("---")
 st.markdown("### 🔍 Run Classification")
 
@@ -98,6 +78,6 @@ if classify_button:
                 prediction = classify_quality(input_text)
                 display_quality(prediction)
             except Exception as e:
-                st.error(f"❌ Error during classification: {e}")
+                st.error(f"❌ Error during classification: {str(e)}")
     else:
-        st.warning("⚠️ Please fill in both the prompt and the response fields before classifying.")
+        st.warning("⚠️ Please fill in both the prompt and the response fields.")
