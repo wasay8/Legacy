@@ -74,7 +74,7 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     final_documents = text_splitter.split_documents(all_docs)
 
-    embeddings = OpenAIEmbeddings(openai_api_key=st.secrets["OPENAI_API_KEY_2"]]
+    embeddings = OpenAIEmbeddings(openai_api_key=st.secrets["OPENAI_API_KEY_2"])
     # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     return FAISS.from_documents(final_documents, embeddings)
 
