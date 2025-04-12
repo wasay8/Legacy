@@ -7,7 +7,7 @@ This project is a **Streamlit web application** designed to assist mental health
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 - `Welcome.py`: Landing page with navigation guidance.
 - `Database_and_LLM.py`: Implements Retrieval-Augmented Generation (RAG) and direct LLM suggestions.
@@ -15,16 +15,16 @@ This project is a **Streamlit web application** designed to assist mental health
 
 ---
 
-## 🧭 Features
+## Features
 
-### 🔍 Task 1: Search & Suggest with LLM (RAG)
+### Task 1: Search & Suggest with LLM (RAG)
 
 - Upload datasets (`counselchat-data.csv`, `train.csv`).
 - Automatically embeds documents into a vector database using FAISS.
 - Ask questions and get context-aware answers from the LLM.
 - Alternatively, get direct suggestions from LLM without retrieval.
 
-### 🤖 Task 2: ML-Based Response Quality Classification
+### Task 2: ML-Based Response Quality Classification
 
 - Input a prompt and a mental health response.
 - Predicts whether the response is:
@@ -34,7 +34,7 @@ This project is a **Streamlit web application** designed to assist mental health
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. **Clone the repository**
 
@@ -79,7 +79,7 @@ streamlit run Welcome.py
 
 ---
 
-## 🧪 Tech Stack
+## Tech Stack
 
 - Python
 - Streamlit
@@ -90,7 +90,7 @@ streamlit run Welcome.py
 
 ---
 
-## 📌 Notes
+## Notes
 
 - The LLM assistant uses GPT-4 for both retrieval and direct suggestions.
 - The classifier uses a custom fine-tuned BERT model: `wasay8/bert-mental-health-lq-hq-mq`.
