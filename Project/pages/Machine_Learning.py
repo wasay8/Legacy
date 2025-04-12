@@ -5,11 +5,11 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 
 # Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained("your-hf-username/your-model-name")
+tokenizer = AutoTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
 # Ensure model is loaded on CPU (not just moved after load!)
 model = AutoModelForSequenceClassification.from_pretrained(
-    "your-hf-username/your-model-name",
+    'wasay8/bert-mental-health-lq-hq-mq',
     device_map=None,       # Important for CPU-only
     low_cpu_mem_usage=False,  # Force full load
     torch_dtype=torch.float32  # Ensure no half precision
