@@ -6,6 +6,9 @@ import torch
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
+# Ensure model is in evaluation mode
+model.eval()  # Switch model to evaluation mode
+
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
 
@@ -36,15 +39,30 @@ with st.container():
 
 # Classification logic
 def classify_quality(input_text):
+    # Tokenize the input text
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
-    
 
+    # No need to call model.to('cpu') here; Hugging Face automatically loads it on the correct device
+    # Move input tensors to CPU explicitly
+    inputs = {k: v.to('cpu') for k, v in inputs.items()}
+
+    # Run model inference
     with torch.no_grad():
         outputs = model(**inputs)
 
+    # Ensure that logits are valid tensors
     logits = outputs.logits
+    if logits is None:
+        raise ValueError("Model did not return valid logits.")
+
+    # Get the prediction from the logits
     prediction = torch.argmax(logits, dim=-1)
-    return prediction.item()
+    
+    # Ensure it's a valid tensor and then get the value
+    if prediction.numel() > 0:
+        return prediction.item()
+    else:
+        raise ValueError("Prediction tensor is empty.")
 
 def display_quality(prediction):
     label_map = {
