@@ -72,7 +72,7 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     final_documents = text_splitter.split_documents(all_docs)
 
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2", device="cpu"))
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2", device="cpu")
     return FAISS.from_documents(final_documents, embeddings)
 
 # === Sidebar for dataset upload ===
