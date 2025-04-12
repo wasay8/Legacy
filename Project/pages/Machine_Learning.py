@@ -1,10 +1,25 @@
 import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
 
-# Load model and tokenizer
-model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+# Load tokenizer and model
+tokenizer = AutoTokenizer.from_pretrained("your-hf-username/your-model-name")
+
+# Ensure model is loaded on CPU (not just moved after load!)
+model = AutoModelForSequenceClassification.from_pretrained(
+    "your-hf-username/your-model-name",
+    device_map=None,       # Important for CPU-only
+    low_cpu_mem_usage=False,  # Force full load
+    torch_dtype=torch.float32  # Ensure no half precision
+).to("cpu")
+
+model.eval()  # Important!
+
+# # Load model and tokenizer
+# model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+# tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
