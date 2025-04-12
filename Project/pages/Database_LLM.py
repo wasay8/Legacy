@@ -19,7 +19,7 @@ csv.field_size_limit(sys.maxsize)
 load_dotenv()
 
 st.set_page_config(page_title="Mental Health LLM Assistant", layout="wide")
-st.title("🧠 Mental Health Counseling Assistant (DATABASE + LLM)")
+st.title("🧠 Mental Health Counseling Assistant")
 
 # Initialize chat history
 if "chat_history" not in st.session_state:
@@ -149,7 +149,7 @@ def direct_llm_suggestion(user_input):
     return response.content
 
 # === Interaction mode ===
-st.subheader("🧠 Choose Interaction Mode")
+st.subheader("Choose Interaction Mode")
 interaction_mode = st.radio(
     "Select how you'd like to interact with the assistant:",
     ["🔍 Search Database", "💡 Ask LLM for a Suggestion"],
