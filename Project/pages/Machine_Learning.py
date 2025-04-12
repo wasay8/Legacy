@@ -42,8 +42,7 @@ def classify_quality(input_text):
     # Tokenize the input text
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
 
-    # No need to call model.to('cpu') here; Hugging Face automatically loads it on the correct device
-    # Move input tensors to CPU explicitly
+    # Ensure inputs are moved to CPU (if needed)
     inputs = {k: v.to('cpu') for k, v in inputs.items()}
 
     # Run model inference
@@ -54,6 +53,10 @@ def classify_quality(input_text):
     logits = outputs.logits
     if logits is None:
         raise ValueError("Model did not return valid logits.")
+    
+    # Check if logits are in an expected state before getting prediction
+    if logits.is_meta:
+        raise RuntimeError("Model output contains meta tensors, which are not valid for predictions.")
 
     # Get the prediction from the logits
     prediction = torch.argmax(logits, dim=-1)
