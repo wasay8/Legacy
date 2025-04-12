@@ -5,7 +5,6 @@ import torch
 # Load model and tokenizer
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-model = model.to("cpu")  # Do this immediately!
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
