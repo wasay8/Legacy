@@ -13,7 +13,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
     device_map=None,       # Important for CPU-only
     low_cpu_mem_usage=False,  # Force full load
     torch_dtype=torch.float32  # Ensure no half precision
-).to("cpu")
+)
 
 model.eval()  # Important!
 
