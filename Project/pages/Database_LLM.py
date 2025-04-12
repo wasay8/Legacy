@@ -6,6 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.schema import Document
 from langchain_openai import ChatOpenAI
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
@@ -73,7 +74,7 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     final_documents = text_splitter.split_documents(all_docs)
 
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = OpenAIEmbeddings(openai_api_key=st.secrets["OPENAI_API_KEY_2"]]
     # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     return FAISS.from_documents(final_documents, embeddings)
 
@@ -135,7 +136,7 @@ def query_llm(user_prompt, vectors):
 
 # === Direct Suggestion (No RAG) ===
 def direct_llm_suggestion(user_input):
-    llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY_2"))
+    llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=st.secrets["OPENAI_API_KEY_2"])
     prompt = f"""
     You are a mental health counseling assistant. A user is seeking guidance on how to best support a patient. 
 
