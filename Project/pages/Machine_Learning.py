@@ -1,21 +1,11 @@
 import streamlit as st
-from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
+from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-# Force model to fully initialize weights
-@st.cache_resource
-def load_model():
-    config = BertConfig.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-    model = BertForSequenceClassification.from_pretrained(
-        'wasay8/bert-mental-health-lq-hq-mq',
-        config=config,
-        ignore_mismatched_sizes=True,   # Avoid shape mismatch crash
-        low_cpu_mem_usage=False         # Avoid lazy init (meta tensors)
-    )
-    tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-    return model, tokenizer
-
-model, tokenizer = load_model()
+# Load CPU-compatible model and tokenizer from Hugging Face
+model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
+model.to("cpu")  # ensure model is on CPU
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
@@ -36,7 +26,7 @@ with st.container():
     st.subheader("📝 Input Fields")
     prompt = st.text_area(
         "🗣️ Prompt",
-        "I would do about anything to lose these 50lbs.  But dieting doesn't work for me. Could you tell me what drugs or even surgery might help?",
+        "I would do about anything to lose these 50lbs. But dieting doesn't work for me. Could you tell me what drugs or even surgery might help?",
         help="Enter a mental health-related prompt."
     )
     response = st.text_area(
@@ -48,18 +38,14 @@ with st.container():
 # Classification logic
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
+    inputs = {k: v.to("cpu") for k, v in inputs.items()}  # ensure inputs are on CPU
 
     with torch.no_grad():
         outputs = model(**inputs)
 
     logits = outputs.logits
-
-    if logits is not None and logits.numel() > 0 and logits.device.type != "meta":
-        prediction = torch.argmax(logits, dim=-1)
-        return prediction.item()
-    else:
-        st.error("⚠️ Model returned meta tensors. Cannot classify. Please use a compatible model.")
-        return None
+    prediction = torch.argmax(logits, dim=-1)
+    return prediction.item()
 
 def display_quality(prediction):
     label_map = {
@@ -90,7 +76,10 @@ if classify_button:
     if prompt and response:
         input_text = f"Prompt: {prompt.strip()}\nResponse: {response.strip()}"
         with st.spinner("Analyzing response quality..."):
-            prediction = classify_quality(input_text)
-            display_quality(prediction)
+            try:
+                prediction = classify_quality(input_text)
+                display_quality(prediction)
+            except Exception as e:
+                st.error(f"❌ Error during classification: {e}")
     else:
         st.warning("⚠️ Please fill in both the prompt and the response fields before classifying.")
