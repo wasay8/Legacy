@@ -13,6 +13,7 @@ import os
 import csv
 import sys
 import time
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 # Setup
 csv.field_size_limit(sys.maxsize)
@@ -72,9 +73,7 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     final_documents = text_splitter.split_documents(all_docs)
 
-    model_name = "all-MiniLM-L6-v2"
-    model_kwargs = {'device': 'cpu'}  # Set device to CPU
-    embeddings = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs)
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     return FAISS.from_documents(final_documents, embeddings)
 
