@@ -6,8 +6,9 @@ import torch
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
-# Force model to stay on CPU (no need to move it to CUDA)
-model.eval()
+# Ensure model is on CPU (Streamlit Cloud usually runs on CPU)
+device = torch.device("cpu")  # Force using CPU
+model.to(device)
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
@@ -41,13 +42,13 @@ with st.container():
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
     
-    # Ensure inputs are on the same device as model (CPU)
-    inputs = {key: value.to("cpu") for key, value in inputs.items()}
+    # Ensure inputs are moved to the correct device (CPU)
+    inputs = {key: value.to(device) for key, value in inputs.items()}
     
     with torch.no_grad():
         outputs = model(**inputs)
     
-    # Check if the output tensor is valid
+    # Check if the output is valid
     logits = outputs.logits
     if logits is not None and logits.numel() > 0:
         prediction = torch.argmax(logits, dim=-1)
