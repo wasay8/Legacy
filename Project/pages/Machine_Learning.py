@@ -6,8 +6,8 @@ import torch
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
-# Move the model to the correct device (CPU in this case)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Force the model to use the CPU (change from cuda if needed)
+device = torch.device("cpu")
 model = model.to(device)
 
 # App config
