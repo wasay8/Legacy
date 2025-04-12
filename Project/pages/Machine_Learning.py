@@ -8,7 +8,8 @@ import torch
 # Load model and tokenizer from HF (safe for safetensors)
 model = BertForSequenceClassification.from_pretrained(
     'wasay8/bert-mental-health-lq-hq-mq',
-    device_map=None  # avoid using accelerate
+    low_cpu_mem_usage=False,
+    torch_dtype=torch.float32
 )
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 
