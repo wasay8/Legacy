@@ -2,12 +2,9 @@ import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-# Load CPU-compatible model and tokenizer from Hugging Face
+# Load the model and tokenizer from Hugging Face (ensure no device-specific movement)
 model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
 tokenizer = BertTokenizer.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')
-
-# Ensure model is in evaluation mode
-model.eval()  # Switch model to evaluation mode
 
 # App config
 st.set_page_config(page_title="🧠 Mental Health Classifier", layout="centered")
@@ -42,8 +39,9 @@ def classify_quality(input_text):
     # Tokenize the input text
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
 
-    # Ensure inputs are moved to CPU (if needed)
-    inputs = {k: v.to('cpu') for k, v in inputs.items()}
+    # Check if inputs are on the CPU
+    if any(input_tensor.device != torch.device('cpu') for input_tensor in inputs.values()):
+        inputs = {k: v.to('cpu') for k, v in inputs.items()}
 
     # Run model inference
     with torch.no_grad():
