@@ -47,10 +47,14 @@ def classify_quality(input_text):
     with torch.no_grad():
         outputs = model(**inputs)
     
-    # Use torch.argmax to get the prediction
-    prediction = torch.argmax(outputs.logits, dim=-1)
-    
-    return prediction.item()
+    # Check if the output tensor is valid
+    logits = outputs.logits
+    if logits is not None and logits.numel() > 0:
+        prediction = torch.argmax(logits, dim=-1)
+        return prediction.item()
+    else:
+        st.error("⚠️ Invalid model output. Please check the model or inputs.")
+        return None
 
 def display_quality(prediction):
     label_map = {
@@ -58,15 +62,16 @@ def display_quality(prediction):
         1: ("High Quality", "#2ECC71", "✅"),
         2: ("Mid Quality", "#F1C40F", "🟡"),
     }
-    label, color, icon = label_map[prediction]
-    st.markdown(
-        f"""
-        <div style="background-color:{color}; padding: 15px; border-radius: 10px; text-align: center;">
-            <h2 style="color:white;">{icon} Predicted Response Quality: {label}</h2>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    if prediction is not None:
+        label, color, icon = label_map[prediction]
+        st.markdown(
+            f"""
+            <div style="background-color:{color}; padding: 15px; border-radius: 10px; text-align: center;">
+                <h2 style="color:white;">{icon} Predicted Response Quality: {label}</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # Action button
 st.markdown("---")
