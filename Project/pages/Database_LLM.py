@@ -92,7 +92,7 @@ with st.sidebar:
 
 # === Query LLM with RAG ===
 def query_llm(user_prompt, vectors):
-    llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY_2"))
+    llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=st.secrets["OPENAI_API_KEY_2"])
 
     prompt_template = PromptTemplate(
         input_variables=["context", "question"],
