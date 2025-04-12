@@ -78,11 +78,16 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path):
 # === Sidebar for dataset upload ===
 with st.sidebar:
     st.header("📁 Create Vector Database")
-    default_counsel_path = "data/counselchat-data.csv"
-    default_kaggle_path = "data/train.csv"
+    
 
-    counsel_path = default_counsel_path
-    kaggle_path = default_kaggle_path
+    # Define the paths to your CSV files
+    counsel_path = os.path.join("data", "counselchat-data.csv")
+    kaggle_path = os.path.join("data", "train.csv")
+    # default_counsel_path = "data/counselchat-data.csv"
+    # default_kaggle_path = "data/train.csv"
+
+    # counsel_path = default_counsel_path
+    # kaggle_path = default_kaggle_path
 
     if st.button("🔍 Load & Embed Data"):
         with st.spinner("Processing and embedding... (1-2 minutes)"):
