@@ -37,7 +37,7 @@ with st.container():
 # Classification logic
 def classify_quality(input_text):
     inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=128)
-    inputs = {k: v.to("cpu") for k, v in inputs.items()}  # ensure inputs are on CPU
+    
 
     with torch.no_grad():
         outputs = model(**inputs)
