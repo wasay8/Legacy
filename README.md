@@ -7,11 +7,14 @@ This project is a **Streamlit web application** designed to assist mental health
 
 ---
 
-## Project Structure
+## Structure
 
-- `Welcome.py`: Landing page with navigation guidance.
-- `Database_and_LLM.py`: Implements Retrieval-Augmented Generation (RAG) and direct LLM suggestions.
-- `Machine_learning.py`: Predicts the quality of mental health counseling responses.
+- `Project/Welcome.py`: Landing page with navigation guidance.
+- `Project/pages/Database_and_LLM.py`: Implements Retrieval-Augmented Generation (RAG) and direct LLM suggestions.
+- `Project/pages/Machine_learning.py`: Predicts the quality of mental health counseling responses.
+- `Project/requirements.txt`: Install the required libraries to execute.
+- `src/finetune.ipynb`: Fine tuning of Bert model for Machine Learning Prediction task of mental health counseling.
+
 
 ---
 
@@ -60,15 +63,20 @@ OPENAI_API_KEY_2=your-openai-api-key
 - Make sure your folder structure is like:
 
 ```
-project-root/
-├── data/
-│   ├── counselchat-data.csv
-│   └── train.csv
-├── vectorstore/  # Will be created after embedding
-├── Welcome.py
-├── Database_and_LLM.py
-├── Machine_learning.py
-└── .env
+Legacy/
+├── src/
+│   ├── finetune.ipynb
+├── Project/
+│   ├── data/
+│   │   ├── counselchat-data.csv
+│   │   └── train.csv
+│   ├── pages/
+│   │   ├── Database_and_LLM.py
+│   │   └── Machine_learning.py
+│   ├── Welcome.py
+│   ├── requirements.txt
+
+
 ```
 
 ### 4. **Run the Streamlit App**

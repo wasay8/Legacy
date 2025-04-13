@@ -11,13 +11,13 @@ tokenizer = AutoTokenizer.from_pretrained(
     )
 model = AutoModelForSequenceClassification.from_pretrained(
     'wasay8/bert-mental-health-lq-hq-mq',
-    use_safetensors=False,        # Disable safetensors
-    low_cpu_mem_usage=False,      # Fully load weights
-    device_map=None               # Prevent meta tensors
+    use_safetensors=False,        
+    low_cpu_mem_usage=False,      
+    device_map=None               
 )
 
 
-model.eval()  # Important!
+model.eval() 
 
 # # Load model and tokenizer
 # model = BertForSequenceClassification.from_pretrained('wasay8/bert-mental-health-lq-hq-mq')

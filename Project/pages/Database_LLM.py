@@ -21,7 +21,7 @@ load_dotenv()
 st.set_page_config(page_title="Mental Health LLM Assistant", layout="wide")
 st.title("🧠 Mental Health Counseling Assistant")
 
-# Initialize chat history
+# Chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = {"rag_chat_history": [], "llm_chat_history": []}
 else:
@@ -30,7 +30,7 @@ else:
     if "llm_chat_history" not in st.session_state.chat_history:
         st.session_state.chat_history["llm_chat_history"] = []
 
-# === Embedding function ===
+#  Embedding function 
 def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path, save_path):
     counsel_loader = CSVLoader(file_path=counsel_data_path)
     counsel_data = counsel_loader.load()
@@ -77,7 +77,7 @@ def create_vector_embedding_with_metadata(counsel_data_path, kaggle_data_path, s
     vectorstore.save_local(save_path)
     return vectorstore
 
-# === Sidebar for dataset upload ===
+#  Sidebar for dataset upload 
 with st.sidebar:
     st.header("📁 Create Vector Database")
 
@@ -103,7 +103,7 @@ with st.sidebar:
             st.session_state["vectors"] = vectors
         st.success("✅ Vector database is ready!")
 
-# === Query LLM with RAG ===
+#  Query LLM with RAG 
 def query_llm(user_prompt, vectors):
     llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=st.secrets["OPENAI_API_KEY_2"])
 
@@ -134,7 +134,7 @@ def query_llm(user_prompt, vectors):
 
     return response["result"], response["source_documents"], duration
 
-# === Direct Suggestion (No RAG) ===
+#  Direct Suggestion (No RAG) 
 def direct_llm_suggestion(user_input):
     llm = ChatOpenAI(model="gpt-4", temperature=0, openai_api_key=st.secrets["OPENAI_API_KEY_2"])
     prompt = f"""
@@ -148,7 +148,7 @@ def direct_llm_suggestion(user_input):
     response = llm.invoke(prompt)
     return response.content
 
-# === Interaction mode ===
+#  Interaction mode 
 st.subheader("Choose Interaction Mode")
 interaction_mode = st.radio(
     "Select how you'd like to interact with the assistant:",
@@ -156,7 +156,7 @@ interaction_mode = st.radio(
     horizontal=True
 )
 
-# === Clear chat and display histories based on mode ===
+# Clear chat and display histories based on mode 
 if interaction_mode == "🔍 Search Database":
     st.markdown("### 🗂️  Chat with Database")
     for entry in st.session_state.chat_history["rag_chat_history"]:
